@@ -37,7 +37,67 @@ const getAllBuildings = async (req, res) => {
   }
 };
 
+// GET DETAIL
+const getBuildingById = async (req, res) => {
+  try {
+    const data = await service.getBuildingById(req.params.id);
+
+    res.json({
+      operationType: "Success",
+      message: "Get building detail successfully",
+      code: "OK",
+      data,
+      timestamp: new Date(),
+    });
+  } catch (err) {
+    res.status(404).json({
+      message: err.message,
+    });
+  }
+};
+
+// UPDATE
+const updateBuilding = async (req, res) => {
+  try {
+    const data = await service.updateBuilding(req.params.id, req.body);
+
+    res.json({
+      operationType: "Success",
+      message: "Update building successfully",
+      code: "OK",
+      data,
+      timestamp: new Date(),
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+
+// DELETE
+const deleteBuilding = async (req, res) => {
+  try {
+    const data = await service.deleteBuilding(req.params.id);
+
+    res.json({
+      operationType: "Success",
+      message: "Delete building successfully",
+      code: "OK",
+      data,
+      timestamp: new Date(),
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+
 module.exports = {
   createBuilding,
   getAllBuildings,
+  getBuildingById,
+  updateBuilding,
+  deleteBuilding,
 };

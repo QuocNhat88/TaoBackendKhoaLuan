@@ -4,5 +4,8 @@ const controller = require("./buildings.controller");
 
 router.post("/", controller.createBuilding);
 router.get("/", controller.getAllBuildings);
+router.get("/:id", controller.getBuildingById);
+router.put("/:id", controller.updateBuilding);
+router.delete("/:id", controller.deleteBuilding);
 
 module.exports = router;
