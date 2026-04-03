@@ -1,45 +1,31 @@
-const { pool } = require("../../configs/database.config");
+const repo = require("./building.repository");
+const mapper = require("./building.mapper");
 
-const buildingService = {
-  // 1. Hàm lấy danh sách
-  getAllBuildings: async () => {
-    const query = "SELECT * FROM buildings ORDER BY created_at DESC";
-    const result = await pool.query(query);
-    return result.rows;
-  },
+const createBuilding = async (reqBody) => {
+  const entity = mapper.toEntity(reqBody);
+  const result = await repo.createBuilding(entity);
 
-  // 2. Hàm thêm mới
-  createBuilding: async (data) => {
-    // Nhận dữ liệu từ Controller truyền xuống
-    const {
-      name,
-      code,
-      address,
-      total_floors,
-      total_apartments,
-      year_built,
-      status,
-    } = data;
-
-    // Viết câu lệnh SQL (Dùng $1, $2 để chống hack SQL Injection)
-    const query = `
-            INSERT INTO buildings (name, code, address, total_floors, total_apartments, year_built, status) 
-            VALUES ($1, $2, $3, $4, $5, $6, $7) 
-            RETURNING *; 
-        `;
-    const values = [
-      name,
-      code,
-      address,
-      total_floors,
-      total_apartments,
-      year_built,
-      status || "ACTIVE",
-    ];
-
-    const result = await pool.query(query, values);
-    return result.rows[0]; // Trả về dòng dữ liệu vừa được tạo
-  },
+  return {
+    id: result.id,
+  };
 };
 
-module.exports = buildingService;
+const getAllBuildings = async (query) => {
+  const { page = 0, size = 10 } = query;
+
+  const result = await repo.getAllBuildings({ page, size });
+
+  return {
+    data: result.rows.map(mapper.toResponse),
+    size: result.rows.length,
+    totalElements: result.total,
+    totalPages: Math.ceil(result.total / size),
+    page: Number(page),
+    pageSize: Number(size),
+  };
+};
+
+module.exports = {
+  createBuilding,
+  getAllBuildings,
+};

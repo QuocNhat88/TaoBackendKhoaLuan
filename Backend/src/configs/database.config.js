@@ -1,26 +1,22 @@
-require("dotenv").config(); // Bắt buộc phải có dòng này để đọc file .env
+require("dotenv").config();
 const { Pool } = require("pg");
 
+// ✅ Dùng connection string (chuẩn production)
 const pool = new Pool({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false,
   },
 });
 
+// ✅ Hàm connect DB
 async function connectDB() {
   try {
     const res = await pool.query("SELECT NOW()");
-    // Chỉ cần lấy ngày giờ hiện tại ra để log hoặc log câu thông báo đơn giản
-    console.log("✅ Kết nối với DB Supabase thành công lúc:", res.rows[0].now);
+    console.log("✅ Kết nối DB thành công:", res.rows[0].now);
   } catch (err) {
-    console.error("❌ Lỗi kết nối DB:", err);
+    console.error("❌ Lỗi kết nối DB:", err.message);
   }
 }
 
-// Export ra để dùng chung cho toàn dự án
 module.exports = { pool, connectDB };
